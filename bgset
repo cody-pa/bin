@@ -1,0 +1,60 @@
+#!/bin/sh
+
+####################################################
+# user defined vars                                #
+# edit these values for your specific system.      #
+# do not include -root or -w commands in the args. #
+# they are already built into the commands.        #
+####################################################
+
+screensaver_name=
+screensaver_args=
+screensaver_dir=/nix/store/$(ls /nix/store | grep xscreensaver | grep -v tar | grep -v drv | grep -v pam)/libexec/xscreensaver
+
+slideshow_args="-duration 60 -zoom 100 -pan 0 -no-letterbox"
+
+vid_name=girl-on-boat.gif
+vid_args="--no-osc --no-osd-bar --loop-file --player-operation-mode=cplayer --no-audio --panscan=1.0 --no-input-default-bindings"
+vid_dir=/home/user/media/wallpaper/animated
+
+#########################################################
+# Command vars. Assign these to various monitors below. #
+# Do not edit.                                          #
+#########################################################
+
+slideshow_command="$screensaver_dir/glslideshow -root $slideshow_args -window-id WID"
+screensaver_command="$screensaver_dir/$screensaver_name -root $screensaver_args -window-id WID"
+vid_command="mpv -wid WID $vid_dir/$vid_name $vid_args"
+
+killall xwinwrap
+
+## loop to get each monitor
+xrandr | grep connected | grep -v disconnected | while read name connected numbers maybe_numbers rest
+do
+    echo "Setting screen $name"
+    num="error: failed to parse dimensions from xrandr"
+    if [ $numbers == "primary" ]
+    then 
+        num=$maybe_numbers
+    else
+        num=$numbers
+    fi
+    echo "Screen dimensions detected: $num"
+    
+    command_arg="unassigned monitor"
+    
+    ###########################################################
+    # Choose which commands to execute for each monitor here. #
+    #####################3333##################################
+    if [ $name == "DP-2" ]
+    then
+        command_arg=$vid_command
+    else
+        if [ $name == "HDMI-0" ]
+        then
+            command_arg=$slideshow_command
+        fi
+    fi
+    
+    xwinwrap -g $num -ov -ni -s -nf -- $command_arg &
+done
