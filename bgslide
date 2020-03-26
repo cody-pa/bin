@@ -1,8 +1,8 @@
-#this script sets the wallpaper as the slideshow screensaver
 #!/bin/sh
+#this script sets the wallpaper as the slideshow screensaver
 
-#glslideshow -root -duration 300 -zoom 100 -pan 0
+killall xwinwrap
+killall xscreensaver
+slide_path=/nix/store/$(ls /nix/store | grep xscreensaver | grep -v tar | grep -v drv | grep -v pam)/libexec/xscreensaver/glslideshow
 
-foobar=/nix/store/$(ls /nix/store | grep xscreensaver | grep -v tar | grep -v drv | grep -v pam)/libexec/xscreensaver/glslideshow
-
-xwinwrap -g 3840x2160 -ov -ni -s -nf -- $foobar -root -duration 60 -zoom 100 -pan 0 -no-letterbox -window-id WID
+xwinwrap -g 3840x2160 -ov -ni -s -nf -- $slide_path -root -duration 60 -zoom 100 -pan 0 -no-letterbox -window-id WID
