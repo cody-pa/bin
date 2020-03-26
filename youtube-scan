@@ -1,0 +1,19 @@
+#i can't even remember what this is for but i feel like i'll regret deleting it.
+
+mkdir -p /tmp/youtube-dl-scan
+youtube-dl -F $1 > /tmp/youtube-dl-scan/F-OUTPUT 
+echo 0 > /tmp/youtube-dl-scan/number-pipe
+cat /tmp/youtube-dl-scan/F-OUTPUT | grep "audio only"
+cat /tmp/youtube-dl-scan/F-OUTPUT | grep "audio only" | while read number webm audio only dash audio bitrate junk
+do
+	bitrate=${bitrate%?}
+	if [ $bitrate -gt $(cat /tmp/youtube-dl-scan/number-pipe) ]
+	then
+		echo $bitrate > /tmp/youtube-dl-scan/number-pipe
+		echo $number > /tmp/youtube-dl-scan/result
+	fi
+done
+
+(cd ~/media/youtube-dl
+echo "downloading $(cat /tmp/youtube-dl-scan/result)"
+youtube-dl -f $(cat /tmp/youtube-dl-scan/result) --no-part -x --audio-format vorbis $1)

@@ -1,0 +1,11 @@
+xrandr | grep LVDS1 | while read name connected primary res orientation junk
+do
+    if [[ $orientation = '(normal' ]]
+    then
+        xrandr --output LVDS1 --rotate left
+        tablet-wacom
+    else
+        xrandr --output LVDS1 --rotate normal
+        tablet-wacom
+    fi
+done

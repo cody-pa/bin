@@ -1,0 +1,4 @@
+for item in $(xinput | grep Wacom | grep -oh "\w*id=\w*" | tr -d "id="); do
+    echo "xinput map-to-output $item LVDS1"
+    xinput map-to-output $item LVDS1
+done

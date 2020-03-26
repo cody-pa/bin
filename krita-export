@@ -1,0 +1,67 @@
+#!/bin/sh
+
+cd ~/projects/art
+
+let count=0
+let err=0
+let result=0
+echo "Starting export"
+krit_exp()
+{
+	orig=$1
+	name=$2
+
+	echo "--------------------------------------"
+	echo "Updating $orig -> $name"
+	krita "$orig" --export --export-filename "$name"
+	if [[ -f $name ]]
+	then
+		echo "$name created successfully."
+		let result=0
+	else
+		echo "Failed to create $name!"
+		let result=1
+	fi
+	echo ""
+}
+
+for thing in $(ls pics -Lrt | grep ".kra" | grep -v "~")
+do
+	orig_file="pics/$thing"
+	filename="pic-export/${thing%.*}.png"
+	need_to_move="pics/${thing%.*}.png"
+
+	if [[ -f "$orig_file" ]]
+	then
+		if [[ -f "$need_to_move" ]]
+		then
+			mv "$need_to_move" "$filename"
+		fi
+		
+		if [[ -f "$filename" ]]
+		then
+			if [ "$orig_file" -nt "$filename" ]
+			then
+				krit_exp "$orig_file" "$filename"
+				let "err = $err + $result"
+				let count++
+			fi
+		else
+			krit_exp "$orig_file" "$filename"
+			let "err = $err + $result"
+			let count++
+		fi
+	fi
+done
+
+let "count = $count - $err"
+if [[ count -eq 0 ]]
+then
+	echo "All exports up to date. Nothing to be done."
+else
+	echo "Export complete. Exported $count images."
+fi
+if [[ $err > 0 ]]
+then
+	echo "Warning: $err files failed to export!"
+fi

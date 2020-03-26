@@ -1,0 +1,10 @@
+for item in $(xinput | grep "Tablet Monitor Pen" | grep -oh "\w*id=\w*" | tr -d "id="); do
+    echo "xinput map-to-output $item HDMI-0"
+    xinput map-to-output $item HDMI-0
+done
+
+#for item in $(xinput | grep Wacom | grep -oh "\w*id=\w*" | tr -d "id="); do
+#    echo "xinput map-to-output $item LVDS1"
+#    xinput map-to-output $item LVDS1
+#done
+

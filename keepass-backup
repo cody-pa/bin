@@ -1,0 +1,13 @@
+#!/bin/sh
+
+cd /run/media/user/KEEPASS_DB &&
+(
+	name="pass_database"
+	ext=".kdbx"
+	time=$(stat -c %Y "pass_database.kdbx")
+	
+	echo $name$ext
+	echo $time
+	echo "Output: /home/user/archive/keepass-backup/$name-$time$ext"
+	cp $name$ext "/home/user/archive/keepass-backup/$name-$time$ext"
+)

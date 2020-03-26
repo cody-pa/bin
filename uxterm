@@ -1,0 +1,6 @@
+#iirc this is an override to prevent those programs
+#from executing because i cannot uninstall them.
+
+#!/bin/sh
+
+tilix "$@"

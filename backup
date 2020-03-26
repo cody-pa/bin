@@ -1,0 +1,34 @@
+#!/bin/sh
+
+if [ "$EUID" -ne 0 ]
+	then echo "This script must be run as root."
+	exit
+else
+	echo "Exporting passwords to storage mirror..."
+	keepass-backup
+	
+    BACKUP_DIR_NAME="/backup/"
+    
+	(
+	    (mountpoint $BACKUP_DIR_NAME) ||
+	    (mount /dev/disk/by-label/linux-backup $BACKUP_DIR_NAME)
+	) &&
+	(
+	    function bk {
+		    echo "Backing up $1..."
+		    rsync -PaoEvv --delete "$1" "$BACKUP_DIR_NAME"
+	    }
+	    
+	    echo "Starting backup process..."
+	    
+	    # list all root folders you want to back up
+	    bk /home
+	    bk /storage
+	    bk /etc/nixos
+	    
+	    #echo ">Unmount /dev/disk/by-label/backup"
+        #umount /dev/disk/by-label/backup
+        #echo ">Poweroff drive"
+        #hdparm -Y /dev/disk/by-label/backup
+    )
+fi

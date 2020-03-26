@@ -1,0 +1,3 @@
+killall compton
+sleep 1 # killall does not block until the process is dead u_u
+compton -b --config ~/.config/compton/config

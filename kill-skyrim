@@ -1,0 +1,1 @@
+ps aux | grep Skyrim | while read user id rest; do kill $id; break; done
