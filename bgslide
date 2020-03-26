@@ -2,7 +2,20 @@
 #this script sets the wallpaper as the slideshow screensaver
 
 killall xwinwrap
-killall xscreensaver
+
 slide_path=/nix/store/$(ls /nix/store | grep xscreensaver | grep -v tar | grep -v drv | grep -v pam)/libexec/xscreensaver/glslideshow
 
-xwinwrap -g 3840x2160 -ov -ni -s -nf -- $slide_path -root -duration 60 -zoom 100 -pan 0 -no-letterbox -window-id WID
+xrandr | grep connected | grep -v disconnected | while read name connected numbers maybe_numbers rest
+do
+    echo $name
+    num="error: failed to parse dimensions from xrandr"
+    if [ $numbers == "primary" ]
+    then 
+        num=$maybe_numbers
+    else
+        num=$numbers
+    fi
+    echo "Nums: $num"
+    
+    xwinwrap -g $num -ov -ni -s -nf -- $slide_path -root -duration 60 -zoom 100 -pan 0 -no-letterbox -window-id WID &
+done
