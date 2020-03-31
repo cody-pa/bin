@@ -23,7 +23,7 @@ else
 	    
 	    # list all root folders you want to back up
 	    bk /home
-	    bk /storage
+	    #bk /storage
 	    bk /etc/nixos
 	    
 	    #echo ">Unmount /dev/disk/by-label/backup"
