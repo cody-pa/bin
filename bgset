@@ -9,13 +9,17 @@
 
 screensaver_name=
 screensaver_args=
-screensaver_dir=/nix/store/$(ls /nix/store | grep xscreensaver | grep -v tar | grep -v drv | grep -v pam)/libexec/xscreensaver
+screensaver_dir=/nix/store/$(ls -t /nix/store | grep xscreensaver | grep -v tar | grep -v drv | grep -v -m1 pam)/libexec/xscreensaver
 
 slideshow_args="-duration 60 -zoom 100 -pan 0 -no-letterbox"
+slideshow2_args="-duration 60 -zoom 100 -pan 0 -no-letterbox"
 
 vid_name=girl-on-boat.gif
 vid_args="--no-osc --no-osd-bar --loop-file --player-operation-mode=cplayer --no-audio --panscan=1.0 --no-input-default-bindings"
 vid_dir=/home/user/media/wallpaper/animated
+
+vid2_name=cityscape1.gif
+vid2_args="--no-osc --no-osd-bar --loop-file --player-operation-mode=cplayer --no-audio --panscan=1.0 --no-input-default-bindings"
 
 #########################################################
 # Command vars. Assign these to various monitors below. #
@@ -23,15 +27,20 @@ vid_dir=/home/user/media/wallpaper/animated
 #########################################################
 
 slideshow_command="$screensaver_dir/glslideshow -root $slideshow_args -window-id WID"
+slideshow2_command="$screensaver_dir/glslideshow -root $slideshow2_args -window-id WID"
 screensaver_command="$screensaver_dir/$screensaver_name -root $screensaver_args -window-id WID"
 vid_command="mpv -wid WID $vid_dir/$vid_name $vid_args"
+vid2_command="mpv -wid WID $vid_dir/$vid2_name $vid2_args"
 
-killall xwinwrap
+killall xwinwrap -q
+killall mpv -q
+killall xscreensaver -q
 
+echo "=========================================="
 ## loop to get each monitor
 xrandr | grep connected | grep -v disconnected | while read name connected numbers maybe_numbers rest
 do
-    echo "Setting screen $name"
+    echo "Setting background for screen $name"
     num="error: failed to parse dimensions from xrandr"
     if [ $numbers == "primary" ]
     then 
@@ -48,13 +57,14 @@ do
     #####################3333##################################
     if [ $name == "DP-2" ]
     then
-        command_arg=$vid_command
+        command_arg=$slideshow_command
     else
         if [ $name == "HDMI-0" ]
         then
-            command_arg=$slideshow_command
+            command_arg=$slideshow2_command
         fi
     fi
     
     xwinwrap -g $num -ov -ni -s -nf -- $command_arg &
+    echo
 done
